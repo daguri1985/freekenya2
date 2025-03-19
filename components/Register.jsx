@@ -136,6 +136,16 @@ const Register = () => {
           Join the movement by actively participating in our grassroots
           initiatives for a better Kenya.
         </p>
+        <p>
+        By registering as a FreeKenya Champion, you become part of a nationwide network of dedicated
+         individuals committed to driving positive change. 
+         As a champion, you’ll have the opportunity to engage in impactful community projects, 
+         advocate for better governance, and contribute to meaningful reforms at both local and national levels. 
+         You'll gain access to exclusive training sessions, leadership development programs, and collaborative
+          forums where your voice will be heard. Whether you’re passionate about social justice, economic empowerment, or policy transformation, this is your chance to be on the frontlines of change. 
+          Together, we can build a more just, inclusive, and prosperous Kenya for all. 
+        Sign up today and be the difference our nation needs!
+        </p>
         <div className="mt-4">
           <button
             onClick={() => setShowForm(true)}
