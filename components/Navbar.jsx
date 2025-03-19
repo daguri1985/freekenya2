@@ -25,7 +25,7 @@ export default function Navbar() {
 
         {/* Desktop Navigation */}
         <ul className="hidden md:flex space-x-6 items-center">
-        <li><Link href="/about" className="text-gray-700 hover:text-blue-600">About Us</Link></li>
+        <li><Link href="/aspirant" className="text-gray-700 hover:text-blue-600">Aspirant Registration</Link></li>
           <li><Link href="/events" className="text-gray-700 hover:text-blue-600">Events</Link></li>
           <li><Link href="/news" className="text-gray-700 hover:text-blue-600">News</Link></li>
           <li><Link href="/resources" className="text-gray-700 hover:text-blue-600">Resource Center</Link></li>
