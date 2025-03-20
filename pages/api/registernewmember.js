@@ -116,6 +116,17 @@ export default async function handler(req, res) {
     }
   }
 
+   // Handle DELETE request
+   if (req.method === "DELETE") {
+    try {
+      const { id } = req.query;
+      await Member.findByIdAndDelete(id);
+      res.status(200).json({ message: "Member deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+
   // Handle unsupported methods
   else {
     res.status(405).json({ error: "Method Not Allowed" });

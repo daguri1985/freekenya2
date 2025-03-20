@@ -1,9 +1,6 @@
 "use client"; // Required for client-side interactivity
 import { useState, useEffect } from "react";
 import Navbar from '@/components/Navbar';
-import React from 'react';
-
-
 
 const EditMembers = () => {
   const [members, setMembers] = useState([]); // State to store members
@@ -97,133 +94,189 @@ const EditMembers = () => {
     }
   };
 
+  // Handle deleting a member
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`/api/registernewmember?id=${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) throw new Error("Failed to delete member");
+
+      // Refresh the members list
+      fetchMembers();
+    } catch (error) {
+      console.error("Error deleting member:", error);
+    }
+  };
+
   return (
     <>
-       <Navbar />
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">Edit Members</h1>
+      <Navbar />
+      <div className="p-4">
+        <h1 className="text-2xl font-bold mb-6 text-green-600">Edit Members</h1>
 
-      {/* Members Table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="py-2 px-4 border">Name</th>
-              <th className="py-2 px-4 border">National ID</th>
-              <th className="py-2 px-4 border">Mobile</th>
-              <th className="py-2 px-4 border">Email</th>
-              <th className="py-2 px-4 border">County</th>
-              <th className="py-2 px-4 border">Constituency</th>
-              <th className="py-2 px-4 border">Ward</th>
-              <th className="py-2 px-4 border">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
+        {/* Members Table */}
+        <div className="overflow-x-auto">
+          {/* Desktop Table */}
+          <table className="min-w-full bg-white border border-gray-200 hidden md:table">
+            <thead className="bg-green-600 text-white">
+              <tr>
+                <th className="py-3 px-4 border">Name</th>
+                <th className="py-3 px-4 border">National ID</th>
+                <th className="py-3 px-4 border">Mobile</th>
+                <th className="py-3 px-4 border">Email</th>
+                <th className="py-3 px-4 border">County</th>
+                <th className="py-3 px-4 border">Constituency</th>
+                <th className="py-3 px-4 border">Ward</th>
+                <th className="py-3 px-4 border">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {members.map((member) => (
+                <tr key={member._id} className="hover:bg-gray-50 transition-colors">
+                  <td className="py-2 px-4 border">{member.name}</td>
+                  <td className="py-2 px-4 border">{member.nationalId}</td>
+                  <td className="py-2 px-4 border">{member.mobile}</td>
+                  <td className="py-2 px-4 border">{member.email}</td>
+                  <td className="py-2 px-4 border">{member.county}</td>
+                  <td className="py-2 px-4 border">{member.constituency}</td>
+                  <td className="py-2 px-4 border">{member.ward}</td>
+                  <td className="py-2 px-4 border">
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleEdit(member)}
+                        className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 shadow-md"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(member._id)}
+                        className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 shadow-md"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Mobile Table (Stacked Layout) */}
+          <div className="md:hidden">
             {members.map((member) => (
-              <tr key={member._id} className="hover:bg-gray-50">
-                <td className="py-2 px-4 border">{member.name}</td>
-                <td className="py-2 px-4 border">{member.nationalId}</td>
-                <td className="py-2 px-4 border">{member.mobile}</td>
-                <td className="py-2 px-4 border">{member.email}</td>
-                <td className="py-2 px-4 border">{member.county}</td>
-                <td className="py-2 px-4 border">{member.constituency}</td>
-                <td className="py-2 px-4 border">{member.ward}</td>
-                <td className="py-2 px-4 border">
+              <div key={member._id} className="bg-white p-4 mb-4 rounded-lg shadow-md">
+                <div className="space-y-2">
+                  <p><strong>Name:</strong> {member.name}</p>
+                  <p><strong>National ID:</strong> {member.nationalId}</p>
+                  <p><strong>Mobile:</strong> {member.mobile}</p>
+                  <p><strong>Email:</strong> {member.email}</p>
+                  <p><strong>County:</strong> {member.county}</p>
+                  <p><strong>Constituency:</strong> {member.constituency}</p>
+                  <p><strong>Ward:</strong> {member.ward}</p>
+                </div>
+                <div className="flex space-x-2 mt-4">
                   <button
                     onClick={() => handleEdit(member)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600"
+                    className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 shadow-md"
                   >
                     Edit
                   </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    
-      {/* Edit Form */}
-      {editingMember && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-xl font-bold mb-4">Edit Member</h2>
-            <form onSubmit={handleSubmit}>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Full Name"
-                className="w-full p-2 border rounded mb-2"
-              />
-              <input
-                type="text"
-                name="nationalId"
-                value={formData.nationalId}
-                onChange={handleChange}
-                placeholder="National ID"
-                className="w-full p-2 border rounded mb-2"
-              />
-              <input
-                type="text"
-                name="mobile"
-                value={formData.mobile}
-                onChange={handleChange}
-                placeholder="Mobile"
-                className="w-full p-2 border rounded mb-2"
-              />
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="Email"
-                className="w-full p-2 border rounded mb-2"
-              />
-              <input
-                type="text"
-                name="county"
-                value={formData.county}
-                onChange={handleChange}
-                placeholder="County"
-                className="w-full p-2 border rounded mb-2"
-              />
-              <input
-                type="text"
-                name="constituency"
-                value={formData.constituency}
-                onChange={handleChange}
-                placeholder="Constituency"
-                className="w-full p-2 border rounded mb-2"
-              />
-              <input
-                type="text"
-                name="ward"
-                value={formData.ward}
-                onChange={handleChange}
-                placeholder="Ward"
-                className="w-full p-2 border rounded mb-2"
-              />
-              <div className="flex justify-end mt-4">
-                <button
-                  type="button"
-                  onClick={() => setEditingMember(null)}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-600"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
-                >
-                  Save Changes
-                </button>
+                  <button
+                    onClick={() => handleDelete(member._id)}
+                    className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 shadow-md"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-            </form>
+            ))}
           </div>
         </div>
-      )}
-    </div>
+
+        {/* Edit Form */}
+        {editingMember && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-96">
+              <h2 className="text-xl font-bold mb-4 text-green-600">Edit Member</h2>
+              <form onSubmit={handleSubmit}>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Full Name"
+                  className="w-full p-2 border rounded mb-2 shadow-sm"
+                />
+                <input
+                  type="text"
+                  name="nationalId"
+                  value={formData.nationalId}
+                  onChange={handleChange}
+                  placeholder="National ID"
+                  className="w-full p-2 border rounded mb-2 shadow-sm"
+                />
+                <input
+                  type="text"
+                  name="mobile"
+                  value={formData.mobile}
+                  onChange={handleChange}
+                  placeholder="Mobile"
+                  className="w-full p-2 border rounded mb-2 shadow-sm"
+                />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Email"
+                  className="w-full p-2 border rounded mb-2 shadow-sm"
+                />
+                <input
+                  type="text"
+                  name="county"
+                  value={formData.county}
+                  onChange={handleChange}
+                  placeholder="County"
+                  className="w-full p-2 border rounded mb-2 shadow-sm"
+                />
+                <input
+                  type="text"
+                  name="constituency"
+                  value={formData.constituency}
+                  onChange={handleChange}
+                  placeholder="Constituency"
+                  className="w-full p-2 border rounded mb-2 shadow-sm"
+                />
+                <input
+                  type="text"
+                  name="ward"
+                  value={formData.ward}
+                  onChange={handleChange}
+                  placeholder="Ward"
+                  className="w-full p-2 border rounded mb-2 shadow-sm"
+                />
+                <div className="flex justify-end mt-4">
+                  <button
+                    type="button"
+                    onClick={() => setEditingMember(null)}
+                    className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-600 shadow-md"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 shadow-md"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
     </>
   );
 };
