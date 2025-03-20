@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import VideoPlayer from "@/components/VideoPlayer";
 
 
 const Register = () => {
@@ -156,13 +157,7 @@ const Register = () => {
         </div>
       </div>
 
-      <div className="w-full md:w-1/2">
-        <img
-          src="/nairobi.jpg"
-          alt="Nairobi City"
-          className="w-full h-full object-cover"
-        />
-      </div>
+     <VideoPlayer />
 
       {showForm && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80">
