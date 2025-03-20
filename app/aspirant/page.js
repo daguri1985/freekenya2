@@ -1,9 +1,8 @@
 "use client";
-import Header from '@/components/Header';
+
 import Navbar from '@/components/Navbar';
 import React from 'react';
 import { useState, useEffect } from 'react';
-import Focus from '@/components/Focus';
 
 const Page = () => {
   const [showForm, setShowForm] = useState(false);
