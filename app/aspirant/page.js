@@ -296,7 +296,7 @@ const Page = () => {
           <div className="bg-green-500 text-white p-6 rounded-lg shadow-lg w-80 text-center">
             <h2 className="text-xl font-bold">🎉 Registration Successful!</h2>
             <p className="mt-2">
-              You have successfully registered as an Aspirant uder FreeKenya in the 2027 Elections.
+              You have successfully registered as an Aspirant under FreeKenya in the 2027 Elections.
             </p>
             <button
               onClick={() => setShowSuccessPopup(false)}
