@@ -146,8 +146,8 @@ const Page = () => {
           As an aspirant, you have the opportunity to make a real difference and drive positive change.
         </p>
         <p className="text-gray-700 mb-6">
-          Whether you're passionate about education, healthcare, or economic development, 
-          your voice matters. Register today and let's build a brighter future together.
+          Whether you&aposre passionate about education, healthcare, or economic development, 
+          your voice matters. Register today and let&aposs build a brighter future together.
         </p>
 
         {/* Call-to-Action Button */}
