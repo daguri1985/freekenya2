@@ -31,7 +31,7 @@ export default function Navbar() {
           <li><Link href="/resources" className="text-gray-700 hover:text-blue-600">Resource Center</Link></li>
           <li><Link href="/register" className="text-gray-700 hover:text-blue-600">Register</Link></li>
           <li>
-            <Link href="/donate" className="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-green-700">
+            <Link href="/Donate" className="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-green-700">
               DONATE
             </Link>
           </li>
