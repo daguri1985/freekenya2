@@ -79,10 +79,11 @@ const Page = () => {
       !formData.nationalId ||
       !formData.mobile ||
       !formData.email ||
+      !formData.position ||
       !formData.county ||
       !formData.constituency ||
-      !formData.ward ||
-      !formData.position // Added position validation
+      !formData.ward 
+    // Added position validation
     ) {
       setMessage("Please fill in all required fields.");
       console.error("Missing fields:", formData);
@@ -114,10 +115,11 @@ const Page = () => {
           nationalId: "",
           mobile: "",
           email: "",
+          position: "",
           county: "",
           constituency: "",
           ward: "",
-          position: "", // Reset position field
+          // Reset position field
         });
         setConstituencies([]);
         setWards([]);

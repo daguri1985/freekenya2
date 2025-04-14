@@ -28,7 +28,7 @@ const VideoPlayer = () => {
               controls // Show default video controls
               muted // Muted by default to allow autoplay
               loop
-              poster="/freekenya1.png" // Optional: Add a poster frame (thumbnail) for the video
+              poster="/freekenya13.jpg" // Optional: Add a poster frame (thumbnail) for the video
             >
               <source src="/bob.mp4" type="video/mp4" />
               Your browser does not support the video tag.

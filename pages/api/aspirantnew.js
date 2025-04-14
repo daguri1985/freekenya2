@@ -4,55 +4,81 @@ import connectToDatabase from "@/lib/mongodb";
 import Aspirant from "@/models/Aspirant";
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method Not Allowed" });
+  if (req.method === "GET") {
+    try {
+      await connectToDatabase();
+      const aspirants = await Aspirant.find();
+      return res.status(200).json(aspirants);
+    } catch (error) {
+      console.error("Error fetching aspirants:", error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
   }
 
+  if (req.method === "POST") {
+    try {
+      await connectToDatabase();
+
+      const { name, nationalId, mobile, email, county, constituency, ward, position } = req.body;
+
+      if (!name || !nationalId || !mobile || !email || !position || !county || !constituency || !ward ) {
+        return res.status(400).json({ error: "All fields are required" });
+      }
+
+      let countyData;
+      try {
+        const filePath = path.join(process.cwd(), 'public', 'county.json');
+        countyData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      } catch (err) {
+        console.error("Error loading county.json:", err);
+        return res.status(500).json({ error: "Error loading county data" });
+      }
+
+      const selectedCounty = countyData.find(c => c.county_name === county);
+      if (!selectedCounty) {
+        return res.status(400).json({ error: "Invalid County" });
+      }
+
+      const selectedConstituency = selectedCounty.constituencies.find(c => c.constituency_name === constituency);
+      if (!selectedConstituency) {
+        return res.status(400).json({ error: "Invalid Constituency for selected County" });
+      }
+
+      if (!selectedConstituency.wards.includes(ward)) {
+        return res.status(400).json({ error: "Invalid Ward for selected Constituency" });
+      }
+
+      const existingAspirant = await Aspirant.findOne({ nationalId });
+      if (existingAspirant) {
+        return res.status(400).json({ error: "Aspirant with this National ID already exists" });
+      }
+
+      const newAspirant = await Aspirant.create({ name, nationalId, mobile, email, county, constituency, ward, position });
+
+      return res.status(201).json({ message: "Aspirant registered successfully", aspirant: newAspirant });
+    } catch (error) {
+      console.error("Registration Error:", error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+// **ADD THIS BLOCK TO HANDLE UPDATES**
+if (req.method === "PUT" || req.method === "PATCH") {
   try {
-    await connectToDatabase();
+    const { id } = req.query; // Assuming ID is sent as a query parameter
+    const updateData = req.body;
 
-    const { name, nationalId, mobile, email, county, constituency, ward, position } = req.body;
+    const updatedAspirant = await Aspirant.findByIdAndUpdate(id, updateData, { new: true });
 
-    // Check if all fields are provided
-    if (!name || !nationalId || !mobile || !email || !county || !constituency || !ward || !position) {
-      return res.status(400).json({ error: "All fields are required" });
+    if (!updatedAspirant) {
+      return res.status(404).json({ error: "Aspirant not found" });
     }
 
-    // Load county.json
-    const filePath = path.join(process.cwd(), 'public', 'county.json');
-    const countyData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-
-    // Validate County
-    const selectedCounty = countyData.find(c => c.county_name === county);
-    if (!selectedCounty) {
-      return res.status(400).json({ error: "Invalid County" });
-    }
-
-    // Validate Constituency
-    const selectedConstituency = selectedCounty.constituencies.find(c => c.constituency_name === constituency);
-    if (!selectedConstituency) {
-      return res.status(400).json({ error: "Invalid Constituency for selected County" });
-    }
-
-    // Validate Ward
-    if (!selectedConstituency.wards.includes(ward)) {
-      return res.status(400).json({ error: "Invalid Ward for selected Constituency" });
-    }
-
-    // Check if an Aspirant with the same National ID exists
-    const existingAspirant = await Aspirant.findOne({ nationalId });
-    if (existingAspirant) {
-      return res.status(400).json({ error: "Aspirant with this National ID already exists" });
-    }
-
-    // Create and save new aspirant
-    const newAspirant = await Aspirant.create({
-      name, nationalId, mobile, email, county, constituency, ward, position
-    });
-
-    res.status(201).json({ message: "Aspirant registered successfully",aspirantr: newAspirant });
+    return res.status(200).json({ message: "Aspirant updated successfully", aspirant: updatedAspirant });
   } catch (error) {
-    console.error("Registration Error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Update Error:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
+}
+
+  return res.status(405).json({ error: "Method Not Allowed" });
 }

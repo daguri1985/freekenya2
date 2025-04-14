@@ -2,47 +2,52 @@
 import { useState, useEffect } from "react";
 import Navbar from '@/components/Navbar';
 
-const EditMembers = () => {
-  const [members, setMembers] = useState([]); // State to store members
-  const [editingMember, setEditingMember] = useState(null); // State to track the member being edited
-  const [formData, setFormData] = useState({
-    name: "",
-    nationalId: "",
-    mobile: "",
-    email: "",
-    county: "",
-    constituency: "",
-    ward: "",
-  }); // State for the edit form
-
-  // Fetch all members from the API
-  const fetchMembers = async () => {
+const EditAspirant = () => {
+    const [aspirants, setAspirants] = useState([]); //state to store aspirants
+    const [editingAspirant, setEditingAspirant] = useState(null);
+    const [formData, setFormData] = useState({
+        name: "",
+        nationalId: "",
+        mobile: "",
+        email: "",
+        position: "",
+        county: "",
+        constituency: "",
+        ward: "",
+    }) ;
+    // Fetch all aspirants from the API
+  const fetchAspirants = async () => {
     try {
-      const response = await fetch("/api/registernewmember");
-      if (!response.ok) throw new Error("Failed to fetch members");
+      const response = await fetch("/api/aspirantnew");
+      console.log("Response status:", response.status);
+      if (!response.ok) {
+        const errorText = await response.text(); // Capture error message
+        throw new Error("Failed to fetch aspirants");
+      }
       const data = await response.json();
-      setMembers(data);
+      setAspirants(data);
     } catch (error) {
-      console.error("Error fetching members:", error);
+      console.error("Error fetching aspirants:", error);
     }
   };
-
-  // Fetch members when the component mounts
+  
+  // Fetch aspirants when the component mounts
   useEffect(() => {
-    fetchMembers();
+    fetchAspirants();
   }, []);
 
   // Handle editing a member
-  const handleEdit = (member) => {
-    setEditingMember(member._id); // Set the member ID being edited
+  const handleEdit = (aspirant) => {
+    setEditingAspirant(aspirant._id); // Set the aspirant ID being edited
     setFormData({
-      name: member.name,
-      nationalId: member.nationalId,
-      mobile: member.mobile,
-      email: member.email,
-      county: member.county,
-      constituency: member.constituency,
-      ward: member.ward,
+      name: aspirant.name,
+      nationalId: aspirant.nationalId,
+      mobile: aspirant.mobile,
+      email: aspirant.email,
+      position: aspirant.position,
+      county: aspirant.county,
+      constituency: aspirant.constituency,
+      ward: aspirant.ward,
     });
   };
 
@@ -55,32 +60,32 @@ const EditMembers = () => {
     }));
   };
 
-  // Handle form submission (update member)
+  // Handle form submission (update aspirant)
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/registernewmember", {
+      const response = await fetch("/api/aspirantnew", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: editingMember,
+          id: editingAspirant,
           ...formData,
         }),
       });
   
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("Error updating member:", errorData);
-        throw new Error(errorData.error || "Failed to update member");
+        console.error("Error updating Apirant:", errorData);
+        throw new Error(errorData.error || "Failed to update aspirant");
       }
   
-      const updatedMember = await response.json();
-      console.log("Member updated:", updatedMember);
+      const updatedAspirant = await response.json();
+      console.log("Aspirant updated:", updatedAspirant);
   
-      // Refresh the members list
-      fetchMembers();
+      // Refresh the Aspirants list
+      fetchAspirants();
   
       // Reset the form and editing state
       setEditingMember(null);
@@ -89,36 +94,38 @@ const EditMembers = () => {
         nationalId: "",
         mobile: "",
         email: "",
+        position:"",
         county: "",
         constituency: "",
         ward: "",
       });
     } catch (error) {
-      console.error("Error updating member:", error.message || error);
+      console.error("Error updating aspirant:", error.message || error);
     }
   };
 
-  // Handle deleting a member
+  // Handle deleting an aspirant
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`/api/registernewmember?id=${id}`, {
+      const response = await fetch(`/api/aspirantnew?id=${id}`, {
         method: "DELETE",
       });
 
-      if (!response.ok) throw new Error("Failed to delete member");
+      if (!response.ok) throw new Error("Failed to delete ASpirant");
 
-      // Refresh the members list
-      fetchMembers();
+      // Refresh the Aspirants list
+      fetchAspirants();
     } catch (error) {
-      console.error("Error deleting member:", error);
+      console.error("Error deleting Aspirant:", error);
     }
   };
 
   return (
-    <>
-      <Navbar />
-      <div className="p-4">
-        <h1 className="text-2xl font-bold mb-6 text-green-600">Edit Members</h1>
+    <div>
+        <>
+        <Navbar />
+        <div className="p-4">
+        <h1 className="text-2xl font-bold mb-6 text-green-600">Edit Aspirants</h1>
 
         {/* Members Table */}
         <div className="overflow-x-auto">
@@ -130,6 +137,7 @@ const EditMembers = () => {
                 <th className="py-3 px-4 border">National ID</th>
                 <th className="py-3 px-4 border">Mobile</th>
                 <th className="py-3 px-4 border">Email</th>
+                <th className="py-3 px-4 border">Position</th>
                 <th className="py-3 px-4 border">County</th>
                 <th className="py-3 px-4 border">Constituency</th>
                 <th className="py-3 px-4 border">Ward</th>
@@ -137,25 +145,26 @@ const EditMembers = () => {
               </tr>
             </thead>
             <tbody>
-              {members.map((member) => (
-                <tr key={member._id} className="hover:bg-gray-50 transition-colors">
-                  <td className="py-2 px-4 border">{member.name}</td>
-                  <td className="py-2 px-4 border">{member.nationalId}</td>
-                  <td className="py-2 px-4 border">{member.mobile}</td>
-                  <td className="py-2 px-4 border">{member.email}</td>
-                  <td className="py-2 px-4 border">{member.county}</td>
-                  <td className="py-2 px-4 border">{member.constituency}</td>
-                  <td className="py-2 px-4 border">{member.ward}</td>
+              {aspirants.map((aspirant) => (
+                <tr key={aspirant._id} className="hover:bg-gray-50 transition-colors">
+                  <td className="py-2 px-4 border">{aspirant.name}</td>
+                  <td className="py-2 px-4 border">{aspirant.nationalId}</td>
+                  <td className="py-2 px-4 border">{aspirant.mobile}</td>
+                  <td className="py-2 px-4 border">{aspirant.email}</td>
+                  <td className="py-2 px-4 border">{aspirant.position}</td>
+                  <td className="py-2 px-4 border">{aspirant.county}</td>
+                  <td className="py-2 px-4 border">{aspirant.constituency}</td>
+                  <td className="py-2 px-4 border">{aspirant.ward}</td>
                   <td className="py-2 px-4 border">
                     <div className="flex space-x-2">
                       <button
-                        onClick={() => handleEdit(member)}
+                        onClick={() => handleEdit(aspirant)}
                         className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 shadow-md"
                       >
                         Edit
                       </button>
                       <button
-                        onClick={() => handleDelete(member._id)}
+                        onClick={() => handleDelete(aspirant._id)}
                         className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 shadow-md"
                       >
                         Delete
@@ -169,26 +178,26 @@ const EditMembers = () => {
 
           {/* Mobile Table (Stacked Layout) */}
           <div className="md:hidden">
-            {members.map((member) => (
-              <div key={member._id} className="bg-white p-4 mb-4 rounded-lg shadow-md">
+            {aspirants.map((aspirant) => (
+              <div key={aspirant._id} className="bg-white p-4 mb-4 rounded-lg shadow-md">
                 <div className="space-y-2">
-                  <p><strong>Name:</strong> {member.name}</p>
-                  <p><strong>National ID:</strong> {member.nationalId}</p>
-                  <p><strong>Mobile:</strong> {member.mobile}</p>
-                  <p><strong>Email:</strong> {member.email}</p>
-                  <p><strong>County:</strong> {member.county}</p>
-                  <p><strong>Constituency:</strong> {member.constituency}</p>
-                  <p><strong>Ward:</strong> {member.ward}</p>
+                  <p><strong>Name:</strong> {aspirant.name}</p>
+                  <p><strong>National ID:</strong> {aspirant.nationalId}</p>
+                  <p><strong>Mobile:</strong> {aspirant.mobile}</p>
+                  <p><strong>Email:</strong> {aspirant.email}</p>
+                  <p><strong>County:</strong> {aspirant.county}</p>
+                  <p><strong>Constituency:</strong> {aspirant.constituency}</p>
+                  <p><strong>Ward:</strong> {aspirant.ward}</p>
                 </div>
                 <div className="flex space-x-2 mt-4">
                   <button
-                    onClick={() => handleEdit(member)}
+                    onClick={() => handleEdit(aspirant)}
                     className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 shadow-md"
                   >
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(member._id)}
+                    onClick={() => handleDelete(aspirant._id)}
                     className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 shadow-md"
                   >
                     Delete
@@ -200,10 +209,10 @@ const EditMembers = () => {
         </div>
 
         {/* Edit Form */}
-        {editingMember && (
+        {editingAspirant && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-96">
-              <h2 className="text-xl font-bold mb-4 text-green-600">Edit Member</h2>
+              <h2 className="text-xl font-bold mb-4 text-green-600">Edit Aspirant</h2>
               <form onSubmit={handleSubmit}>
                 <input
                   type="text"
@@ -237,6 +246,14 @@ const EditMembers = () => {
                   placeholder="Email"
                   className="w-full p-2 border rounded mb-2 shadow-sm"
                 />
+                 <input
+                  type="position"
+                  name="position"
+                  value={formData.position}
+                  onChange={handleChange}
+                  placeholder="Position"
+                  className="w-full p-2 border rounded mb-2 shadow-sm"
+                />
                 <input
                   type="text"
                   name="county"
@@ -264,7 +281,7 @@ const EditMembers = () => {
                 <div className="flex justify-end mt-4">
                   <button
                     type="button"
-                    onClick={() => setEditingMember(null)}
+                    onClick={() => setEditingAspirant(null)}
                     className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-600 shadow-md"
                   >
                     Cancel
@@ -281,8 +298,9 @@ const EditMembers = () => {
           </div>
         )}
       </div>
-    </>
-  );
-};
+        </>
+    </div>
+  )
+}
 
-export default EditMembers;
+export default EditAspirant

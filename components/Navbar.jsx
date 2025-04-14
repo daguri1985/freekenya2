@@ -27,9 +27,9 @@ export default function Navbar() {
         <ul className="hidden md:flex space-x-6 items-center">
         <li><Link href="/aspirant" className="text-gray-700 hover:text-blue-600">Aspirant Registration</Link></li>
           <li><Link href="/editmembers" className="text-gray-700 hover:text-blue-600">Members</Link></li>
-          <li><Link href="/news" className="text-gray-700 hover:text-blue-600">News</Link></li>
+          <li><Link href="/editaspirant" className="text-gray-700 hover:text-blue-600">Aspirants</Link></li>
           <li><Link href="/resources" className="text-gray-700 hover:text-blue-600">Resource Center</Link></li>
-          <li><Link href="/register" className="text-gray-700 hover:text-blue-600">Register</Link></li>
+          <li><Link href="/register" className="text-gray-700 hover:text-blue-600">Register As a member</Link></li>
           <li>
             <Link href="/Donate" className="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-green-700">
               DONATE
