@@ -95,6 +95,7 @@ const EditMembers = () => {
       });
     } catch (error) {
       console.error("Error updating member:", error.message || error);
+      alert("Failed to update member: " + (error.message || "Unknown error occurred"));
     }
   };
 

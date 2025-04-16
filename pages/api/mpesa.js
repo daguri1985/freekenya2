@@ -7,35 +7,54 @@ export default async function handler(req, res) {
 
   const { phone, amount } = req.body;
 
-  // Environment variables (add these to your .env.local file)
+  // Load environment variables
   const consumerKey = process.env.MPESA_CONSUMER_KEY;
   const consumerSecret = process.env.MPESA_CONSUMER_SECRET;
- 
- 
-  const callbackUrl = process.env.MPESA_CALLBACK_URL; // e.g., "https://your-ngrok-url.ngrok.io/api/callback"
+  const shortcode = process.env.MPESA_SHORTCODE || "174379"; // default sandbox shortcode
+  const passkey = process.env.MPESA_PASSKEY;
+  const callbackUrl = process.env.MPESA_CALLBACK_URL;
+
+  if (!consumerKey || !consumerSecret || !passkey || !callbackUrl) {
+    return res.status(500).json({
+      message: "Missing required environment variables",
+    });
+  }
+
+  if (!phone || !amount) {
+    return res.status(400).json({ message: "Phone and amount are required" });
+  }
 
   // Step 1: Generate Access Token
   const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString("base64");
+  console.log("Encoded Auth Header:", auth);
+
   let accessToken;
   try {
     const tokenResponse = await axios.get(
       "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
       {
-        headers: { Authorization: `Basic ${auth}` },
+        headers: {
+          Authorization: `Basic ${auth}`,
+        },
       }
     );
     accessToken = tokenResponse.data.access_token;
+    console.log("Access Token:", accessToken);
   } catch (error) {
     console.error("Token Error:", error.response?.data || error.message);
-    return res.status(500).json({ message: "Failed to generate access token" });
+    return res.status(500).json({
+      message: "Failed to generate access token",
+      details: error.response?.data || error.message,
+    });
   }
 
-  // Step 2: Initiate STK Push
+  // Step 2: Prepare STK Push
   const timestamp = new Date()
     .toISOString()
     .replace(/[^0-9]/g, "")
-    .slice(0, 14); // Format: YYYYMMDDHHMMSS
-  const password = Buffer.from(`${shortcode}${timestamp}`).toString("base64");
+    .slice(0, 14); // YYYYMMDDHHMMSS
+
+  const password = Buffer.from(`${shortcode}${passkey}${timestamp}`).toString("base64");
 
   const stkPushData = {
     BusinessShortCode: shortcode,
@@ -43,13 +62,15 @@ export default async function handler(req, res) {
     Timestamp: timestamp,
     TransactionType: "CustomerPayBillOnline",
     Amount: amount,
-    PartyA: phone, // Phone number sending the funds
-    PartyB: shortcode, // Shortcode receiving the funds
-    PhoneNumber: phone, // Phone number to receive STK prompt
+    PartyA: phone,
+    PartyB: shortcode,
+    PhoneNumber: phone,
     CallBackURL: callbackUrl,
     AccountReference: "FreeKenya Donation",
     TransactionDesc: "Donation to FreeKenya Movement",
   };
+
+  console.log("STK Push Payload:", stkPushData);
 
   try {
     const stkResponse = await axios.post(
@@ -62,20 +83,15 @@ export default async function handler(req, res) {
         },
       }
     );
+
+    console.log("STK Push Success:", stkResponse.data);
     return res.status(200).json({ success: true, data: stkResponse.data });
   } catch (error) {
     console.error("STK Push Error:", error.response?.data || error.message);
     return res.status(500).json({
       success: false,
       message: error.response?.data?.errorMessage || "STK Push failed",
+      details: error.response?.data || error.message,
     });
   }
-  console.log("Env values:", {
-    consumerKey,
-    consumerSecret,
-    shortcode,
-    passkey,
-    callbackUrl,
-  });
 }
- 

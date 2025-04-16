@@ -131,7 +131,7 @@ export default function Header() {
                     <select name="county" value={formData.county} onChange={handleChange} className="w-full p-3 border rounded-md mb-4 text-gray-700 focus:ring-green-500 focus:border-green-500" required>
                         <option value="">Select County</option>
                         {counties.map((county) => (
-                            <option key={county.county_id} value={county.county_name}>
+                            <option key={county.county_code} value={county.county_name}>
                                 {county.county_name}
                             </option>
                         ))}

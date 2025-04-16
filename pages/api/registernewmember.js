@@ -83,7 +83,7 @@ export default async function handler(req, res) {
   
       // Load county.json
       const filePath = path.join(process.cwd(), 'public', 'county.json');
-      const countyData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      const countyData = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', 'county.json'), 'utf8'));
   
       // Debug: Log county data
       console.log("County Data:", countyData);
@@ -130,12 +130,17 @@ export default async function handler(req, res) {
   }
 
    // Handle DELETE request
-   if (req.method === "DELETE") {
+   else if (req.method === "DELETE") {
     try {
       const { id } = req.query;
-      await Member.findByIdAndDelete(id);
+      if (!id) return res.status(400).json({ error: "ID is required" });
+  
+      const deleted = await Member.findByIdAndDelete(id);
+      if (!deleted) return res.status(404).json({ error: "Member not found" });
+  
       res.status(200).json({ message: "Member deleted successfully" });
     } catch (error) {
+      console.error("Error deleting member:", error);
       res.status(500).json({ error: "Internal Server Error" });
     }
   }

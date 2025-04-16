@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import VideoPlayer from "@/components/VideoPlayer";
 
-
 const Register = () => {
   const [showForm, setShowForm] = useState(false);
   const [counties, setCounties] = useState([]);
@@ -41,15 +40,14 @@ const Register = () => {
   }, []);
 
   const handleChange = (e) => {
-    
     const { name, value } = e.target; // Destructure name and value from e.target
-  
+
     // Update formData
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
-  
+
     // Update constituencies and wards based on the selected county
     if (name === "county") {
       const selectedCounty = counties.find((county) => county.county_name === value);
@@ -57,7 +55,7 @@ const Register = () => {
       setWards([]);
       setFormData((prev) => ({ ...prev, constituency: "", ward: "" }));
     }
-  
+
     // Update wards based on the selected constituency
     if (name === "constituency") {
       const selectedConstituency = constituencies.find(
@@ -71,7 +69,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form Data Before Validation:", formData); // Debugging
-  
+
     // Ensure all required fields are filled
     if (
       !formData.name ||
@@ -86,7 +84,7 @@ const Register = () => {
       console.error("Missing fields:", formData);
       return;
     }
-  
+
     try {
       const response = await fetch("/api/registernewmember", {
         method: "POST",
@@ -95,7 +93,7 @@ const Register = () => {
         },
         body: JSON.stringify(formData),
       });
-  
+
       let data;
       try {
         data = await response.json(); // Ensure response is JSON
@@ -104,7 +102,7 @@ const Register = () => {
         setMessage("Unexpected server response.");
         return;
       }
-  
+
       if (response.ok) {
         setShowSuccessPopup(true);
         setFormData({
@@ -126,6 +124,7 @@ const Register = () => {
       setMessage("An error occurred. Please try again.");
     }
   };
+
   return (
     <div className="bg-gray-100 rounded-lg shadow-lg mt-8 mx-auto w-full flex flex-col md:flex-row overflow-hidden">
       <div className="w-full md:w-1/2 p-6 flex flex-col justify-start">
@@ -138,14 +137,14 @@ const Register = () => {
           initiatives for a better Kenya.
         </p>
         <p>
-        By registering as a FreeKenya Champion, you become part of a nationwide network of dedicated
-         individuals committed to driving positive change. 
-         As a champion, you’ll have the opportunity to engage in impactful community projects, 
-         advocate for better governance, and contribute to meaningful reforms at both local and national levels. 
-         You'll gain access to exclusive training sessions, leadership development programs, and collaborative
-          forums where your voice will be heard. Whether you’re passionate about social justice, economic empowerment, or policy transformation, this is your chance to be on the frontlines of change. 
-          Together, we can build a more just, inclusive, and prosperous Kenya for all. 
-        Sign up today and be the difference our nation needs!
+          By registering as a FreeKenya Champion, you become part of a nationwide network of dedicated
+          individuals committed to driving positive change. As a champion, you’ll have the opportunity
+          to engage in impactful community projects, advocate for better governance, and contribute to
+          meaningful reforms at both local and national levels. You'll gain access to exclusive training
+          sessions, leadership development programs, and collaborative forums where your voice will be
+          heard. Whether you’re passionate about social justice, economic empowerment, or policy transformation,
+          this is your chance to be on the frontlines of change. Together, we can build a more just, inclusive,
+          and prosperous Kenya for all. Sign up today and be the difference our nation needs!
         </p>
         <div className="mt-4">
           <button
@@ -157,7 +156,7 @@ const Register = () => {
         </div>
       </div>
 
-     <VideoPlayer />
+      <VideoPlayer />
 
       {showForm && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80">
@@ -165,10 +164,8 @@ const Register = () => {
             <h2 className="text-xl font-bold text-gray-900">
               Register as a FreeKenya Champion
             </h2>
-          
-            <form className="mt-4" onSubmit={handleSubmit}>
-            
 
+            <form className="mt-4" onSubmit={handleSubmit}>
               <input
                 type="text"
                 name="name"
@@ -202,69 +199,69 @@ const Register = () => {
                 className="w-full p-2 border rounded mb-2"
               />
 
-            <select
-  name="county"
-  value={formData.county} // Ensure this comes from formData
-  onChange={(e) => {
-    const countyName = e.target.value;
-    setSelectedCounty(countyName);
-    
-    // Find selected county and its constituencies
-    const county = counties.find((c) => c.county_name === countyName);
-    setConstituencies(county ? county.constituencies : []);
-    setSelectedConstituency("");
-    setWards([]);
+              <select
+                name="county"
+                value={formData.county}
+                onChange={(e) => {
+                  const countyName = e.target.value;
+                  setSelectedCounty(countyName);
 
-    // Update formData
-    setFormData((prev) => ({ ...prev, county: countyName, constituency: "", ward: "" }));
-  }}
-  className="w-full p-2 border rounded mb-2"
->
-  <option value="">Select County</option>
-  {counties.map((county, index) => (
-    <option key={index} value={county.county_name}>
-      {county.county_name}
-    </option>
-  ))}
-</select>
+                  // Find selected county and its constituencies
+                  const county = counties.find((c) => c.county_name === countyName);
+                  setConstituencies(county ? county.constituencies : []);
+                  setSelectedConstituency("");
+                  setWards([]);
 
-<select
-  name="constituency"
-  value={formData.constituency} // Ensure this comes from formData
-  onChange={(e) => {
-    const constituencyName = e.target.value;
-    setSelectedConstituency(constituencyName);
-    
-    // Find selected constituency and its wards
-    const constituency = constituencies.find((c) => c.constituency_name === constituencyName);
-    setWards(constituency ? constituency.wards : []);
+                  // Update formData
+                  setFormData((prev) => ({ ...prev, county: countyName, constituency: "", ward: "" }));
+                }}
+                className="w-full p-2 border rounded mb-2"
+              >
+                <option value="">Select County</option>
+                {counties.map((county, index) => (
+                  <option key={index} value={county.county_name}>
+                    {county.county_name}
+                  </option>
+                ))}
+              </select>
 
-    // Update formData
-    setFormData((prev) => ({ ...prev, constituency: constituencyName, ward: "" }));
-  }}
-  className="w-full p-2 border rounded mb-2"
->
-  <option value="">Select Constituency</option>
-  {constituencies.map((constituency, index) => (
-    <option key={index} value={constituency.constituency_name}>
-      {constituency.constituency_name}
-    </option>
-  ))}
-</select>
+              <select
+                name="constituency"
+                value={formData.constituency}
+                onChange={(e) => {
+                  const constituencyName = e.target.value;
+                  setSelectedConstituency(constituencyName);
 
-<select
-  name="ward"
-  value={formData.ward}
-  onChange={handleChange} // This is fine as is
-  className="w-full p-2 border rounded mb-2"
->
-  <option value="">Select Ward</option>
-  {wards.map((ward, index) => (
-    <option key={index} value={ward}>
-      {ward}
-    </option>
-  ))}
-</select>
+                  // Find selected constituency and its wards
+                  const constituency = constituencies.find((c) => c.constituency_name === constituencyName);
+                  setWards(constituency ? constituency.wards : []);
+
+                  // Update formData
+                  setFormData((prev) => ({ ...prev, constituency: constituencyName, ward: "" }));
+                }}
+                className="w-full p-2 border rounded mb-2"
+              >
+                <option value="">Select Constituency</option>
+                {constituencies.map((constituency, index) => (
+                  <option key={index} value={constituency.constituency_name}>
+                    {constituency.constituency_name}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                name="ward"
+                value={formData.ward}
+                onChange={handleChange}
+                className="w-full p-2 border rounded mb-2"
+              >
+                <option value="">Select Ward</option>
+                {wards.map((ward, index) => (
+                  <option key={index} value={ward}>
+                    {ward}
+                  </option>
+                ))}
+              </select>
 
               <div className="flex justify-between mt-4">
                 <button
@@ -281,7 +278,6 @@ const Register = () => {
                   Close
                 </button>
               </div>
-              
             </form>
           </div>
         </div>
