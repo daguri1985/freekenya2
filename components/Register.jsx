@@ -128,15 +128,18 @@ const Register = () => {
   return (
     <div className="bg-gray-100 rounded-lg shadow-lg mt-8 mx-auto w-full flex flex-col md:flex-row overflow-hidden">
       <div className="w-full md:w-1/2 p-6 flex flex-col justify-start">
+     
+     
+    
         <h3 className="text-2xl font-bold text-gray-900">
           Become a FreeKenya Champion
         </h3>
+        
         <hr className="my-2 border-gray-300" />
         <p className="text-gray-700 mt-2">
           Join the movement by actively participating in our grassroots
           initiatives for a better Kenya.
-        </p>
-        <p>
+        
           By registering as a FreeKenya Champion, you become part of a nationwide network of dedicated
           individuals committed to driving positive change. As a champion, you’ll have the opportunity
           to engage in impactful community projects, advocate for better governance, and contribute to
@@ -146,6 +149,7 @@ const Register = () => {
           this is your chance to be on the frontlines of change. Together, we can build a more just, inclusive,
           and prosperous Kenya for all. Sign up today and be the difference our nation needs!
         </p>
+     
         <div className="mt-4">
           <button
             onClick={() => setShowForm(true)}
@@ -153,10 +157,11 @@ const Register = () => {
           >
             Register Here
           </button>
+          
         </div>
+        
       </div>
 
-      <VideoPlayer />
 
       {showForm && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80">
