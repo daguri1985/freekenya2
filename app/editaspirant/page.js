@@ -1,306 +1,168 @@
-"use client"; // Required for client-side interactivity
+"use client";
 import { useState, useEffect } from "react";
 import Navbar from '@/components/Navbar';
+import { FaEdit, FaTrash } from 'react-icons/fa';
+import { motion, AnimatePresence } from "framer-motion";
 
 const EditAspirant = () => {
-    const [aspirants, setAspirants] = useState([]); //state to store aspirants
-    const [editingAspirant, setEditingAspirant] = useState(null);
-    const [formData, setFormData] = useState({
-        name: "",
-        nationalId: "",
-        mobile: "",
-        email: "",
-        position: "",
-        county: "",
-        constituency: "",
-        ward: "",
-    }) ;
-    // Fetch all aspirants from the API
+  const [aspirants, setAspirants] = useState([]);
+  const [editingAspirant, setEditingAspirant] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "", nationalId: "", mobile: "", email: "", 
+    position: "", county: "", constituency: "", ward: "",
+  });
+
   const fetchAspirants = async () => {
+    setLoading(true);
     try {
       const response = await fetch("/api/aspirantnew");
-      console.log("Response status:", response.status);
-      if (!response.ok) {
-        const errorText = await response.text(); // Capture error message
-        throw new Error("Failed to fetch aspirants");
-      }
+      if (!response.ok) throw new Error("Failed to fetch aspirants");
       const data = await response.json();
       setAspirants(data);
     } catch (error) {
       console.error("Error fetching aspirants:", error);
+    } finally {
+      setLoading(false);
     }
   };
-  
-  // Fetch aspirants when the component mounts
+
   useEffect(() => {
     fetchAspirants();
   }, []);
 
-  // Handle editing a member
   const handleEdit = (aspirant) => {
-    setEditingAspirant(aspirant._id); // Set the aspirant ID being edited
-    setFormData({
-      name: aspirant.name,
-      nationalId: aspirant.nationalId,
-      mobile: aspirant.mobile,
-      email: aspirant.email,
-      position: aspirant.position,
-      county: aspirant.county,
-      constituency: aspirant.constituency,
-      ward: aspirant.ward,
-    });
+    setEditingAspirant(aspirant._id);
+    setFormData({ ...aspirant });
   };
 
-  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle form submission (update aspirant)
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await fetch("/api/aspirantnew", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: editingAspirant,
-          ...formData,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editingAspirant, ...formData }),
       });
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error updating Apirant:", errorData);
-        throw new Error(errorData.error || "Failed to update aspirant");
-      }
-  
-      const updatedAspirant = await response.json();
-      console.log("Aspirant updated:", updatedAspirant);
-  
-      // Refresh the Aspirants list
+      if (!response.ok) throw new Error("Failed to update aspirant");
       fetchAspirants();
-  
-      // Reset the form and editing state
-      setEditingMember(null);
-      setFormData({
-        name: "",
-        nationalId: "",
-        mobile: "",
-        email: "",
-        position:"",
-        county: "",
-        constituency: "",
-        ward: "",
-      });
+      setEditingAspirant(null);
     } catch (error) {
-      console.error("Error updating aspirant:", error.message || error);
+      console.error(error);
     }
   };
 
-  // Handle deleting an aspirant
   const handleDelete = async (id) => {
+    if (!confirm("Are you sure you want to delete this aspirant?")) return;
     try {
-      const response = await fetch(`/api/aspirantnew?id=${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Failed to delete ASpirant");
-
-      // Refresh the Aspirants list
+      await fetch(`/api/aspirantnew?id=${id}`, { method: "DELETE" });
       fetchAspirants();
     } catch (error) {
-      console.error("Error deleting Aspirant:", error);
+      console.error(error);
     }
   };
 
   return (
-    <div>
-        <>
-        <Navbar />
-        <div className="p-4">
-        <h1 className="text-2xl font-bold mb-6 text-green-600">Edit Aspirants</h1>
+    <>
+      <Navbar />
+      <div className="p-6 min-h-screen bg-gray-50">
+        <h1 className="text-3xl font-extrabold mb-8 text-green-700">Manage Aspirants</h1>
 
-        {/* Members Table */}
-        <div className="overflow-x-auto">
-          {/* Desktop Table */}
-          <table className="min-w-full bg-white border border-gray-200 hidden md:table">
-            <thead className="bg-green-600 text-white">
-              <tr>
-                <th className="py-3 px-4 border">Name</th>
-                <th className="py-3 px-4 border">National ID</th>
-                <th className="py-3 px-4 border">Mobile</th>
-                <th className="py-3 px-4 border">Email</th>
-                <th className="py-3 px-4 border">Position</th>
-                <th className="py-3 px-4 border">County</th>
-                <th className="py-3 px-4 border">Constituency</th>
-                <th className="py-3 px-4 border">Ward</th>
-                <th className="py-3 px-4 border">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {aspirants.map((aspirant) => (
-                <tr key={aspirant._id} className="hover:bg-gray-50 transition-colors">
-                  <td className="py-2 px-4 border">{aspirant.name}</td>
-                  <td className="py-2 px-4 border">{aspirant.nationalId}</td>
-                  <td className="py-2 px-4 border">{aspirant.mobile}</td>
-                  <td className="py-2 px-4 border">{aspirant.email}</td>
-                  <td className="py-2 px-4 border">{aspirant.position}</td>
-                  <td className="py-2 px-4 border">{aspirant.county}</td>
-                  <td className="py-2 px-4 border">{aspirant.constituency}</td>
-                  <td className="py-2 px-4 border">{aspirant.ward}</td>
-                  <td className="py-2 px-4 border">
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleEdit(aspirant)}
-                        className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 shadow-md"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(aspirant._id)}
-                        className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 shadow-md"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {/* Mobile Table (Stacked Layout) */}
-          <div className="md:hidden">
+        {loading ? (
+          <div className="flex justify-center items-center h-40">
+            <div className="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : aspirants.length === 0 ? (
+          <div className="text-center text-gray-500">No aspirants available yet.</div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {aspirants.map((aspirant) => (
-              <div key={aspirant._id} className="bg-white p-4 mb-4 rounded-lg shadow-md">
-                <div className="space-y-2">
-                  <p><strong>Name:</strong> {aspirant.name}</p>
-                  <p><strong>National ID:</strong> {aspirant.nationalId}</p>
+              <div key={aspirant._id} className="bg-white rounded-xl p-5 shadow hover:shadow-md transition">
+                <h2 className="text-xl font-bold text-green-600">{aspirant.name}</h2>
+                <p className="text-sm text-gray-500 mb-4">{aspirant.position}</p>
+                <div className="space-y-1 text-sm">
+                  <p><strong>ID:</strong> {aspirant.nationalId}</p>
                   <p><strong>Mobile:</strong> {aspirant.mobile}</p>
                   <p><strong>Email:</strong> {aspirant.email}</p>
                   <p><strong>County:</strong> {aspirant.county}</p>
                   <p><strong>Constituency:</strong> {aspirant.constituency}</p>
                   <p><strong>Ward:</strong> {aspirant.ward}</p>
                 </div>
-                <div className="flex space-x-2 mt-4">
+                <div className="flex space-x-4 mt-4">
                   <button
                     onClick={() => handleEdit(aspirant)}
-                    className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 shadow-md"
+                    className="flex items-center gap-1 px-3 py-1 text-sm bg-green-500 hover:bg-green-600 text-white rounded-md shadow"
                   >
-                    Edit
+                    <FaEdit /> Edit
                   </button>
                   <button
                     onClick={() => handleDelete(aspirant._id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 shadow-md"
+                    className="flex items-center gap-1 px-3 py-1 text-sm bg-red-500 hover:bg-red-600 text-white rounded-md shadow"
                   >
-                    Delete
+                    <FaTrash /> Delete
                   </button>
                 </div>
               </div>
             ))}
           </div>
-        </div>
-
-        {/* Edit Form */}
-        {editingAspirant && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-96">
-              <h2 className="text-xl font-bold mb-4 text-green-600">Edit Aspirant</h2>
-              <form onSubmit={handleSubmit}>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Full Name"
-                  className="w-full p-2 border rounded mb-2 shadow-sm"
-                />
-                <input
-                  type="text"
-                  name="nationalId"
-                  value={formData.nationalId}
-                  onChange={handleChange}
-                  placeholder="National ID"
-                  className="w-full p-2 border rounded mb-2 shadow-sm"
-                />
-                <input
-                  type="text"
-                  name="mobile"
-                  value={formData.mobile}
-                  onChange={handleChange}
-                  placeholder="Mobile"
-                  className="w-full p-2 border rounded mb-2 shadow-sm"
-                />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Email"
-                  className="w-full p-2 border rounded mb-2 shadow-sm"
-                />
-                 <input
-                  type="position"
-                  name="position"
-                  value={formData.position}
-                  onChange={handleChange}
-                  placeholder="Position"
-                  className="w-full p-2 border rounded mb-2 shadow-sm"
-                />
-                <input
-                  type="text"
-                  name="county"
-                  value={formData.county}
-                  onChange={handleChange}
-                  placeholder="County"
-                  className="w-full p-2 border rounded mb-2 shadow-sm"
-                />
-                <input
-                  type="text"
-                  name="constituency"
-                  value={formData.constituency}
-                  onChange={handleChange}
-                  placeholder="Constituency"
-                  className="w-full p-2 border rounded mb-2 shadow-sm"
-                />
-                <input
-                  type="text"
-                  name="ward"
-                  value={formData.ward}
-                  onChange={handleChange}
-                  placeholder="Ward"
-                  className="w-full p-2 border rounded mb-2 shadow-sm"
-                />
-                <div className="flex justify-end mt-4">
-                  <button
-                    type="button"
-                    onClick={() => setEditingAspirant(null)}
-                    className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-600 shadow-md"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 shadow-md"
-                  >
-                    Save Changes
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
         )}
-      </div>
-        </>
-    </div>
-  )
-}
 
-export default EditAspirant
+        {/* Edit Form Modal */}
+        <AnimatePresence>
+          {editingAspirant && (
+            <motion.div 
+              className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }}
+            >
+              <motion.div 
+                className="bg-white p-8 rounded-xl shadow-xl w-11/12 md:w-96"
+                initial={{ y: -50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -50, opacity: 0 }}
+              >
+                <h2 className="text-2xl font-bold mb-6 text-green-600">Edit Aspirant</h2>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  {["name", "nationalId", "mobile", "email", "position", "county", "constituency", "ward"].map((field) => (
+                    <input
+                      key={field}
+                      type={field === "email" ? "email" : "text"}
+                      name={field}
+                      value={formData[field]}
+                      onChange={handleChange}
+                      placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+                      className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+                    />
+                  ))}
+                  <div className="flex justify-end space-x-3">
+                    <button
+                      type="button"
+                      onClick={() => setEditingAspirant(null)}
+                      className="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </>
+  );
+};
+
+export default EditAspirant;

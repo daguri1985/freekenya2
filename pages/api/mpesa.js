@@ -1,4 +1,5 @@
 import axios from "axios";
+import { sanityClient } from '@/lib/sanity'; // Import the Sanity client
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -85,6 +86,30 @@ export default async function handler(req, res) {
     );
 
     console.log("STK Push Success:", stkResponse.data);
+
+    // Step 3: Store donation in Sanity
+    const { CheckoutRequestID, ResponseCode } = stkResponse.data;
+    if (ResponseCode === "0") {
+      const donation = {
+        _type: 'donation',
+        phoneNumber: phone,
+        amount: parseFloat(amount),
+        transactionId: CheckoutRequestID,
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+      };
+
+      try {
+        await sanityClient.create(donation);
+        console.log("Donation saved to Sanity:", donation);
+      } catch (sanityError) {
+        console.error("Sanity Error:", sanityError.message);
+        // Don't fail the request if Sanity fails; log the error and proceed
+      }
+    } else {
+      console.warn("STK Push ResponseCode not 0:", ResponseCode);
+    }
+
     return res.status(200).json({ success: true, data: stkResponse.data });
   } catch (error) {
     console.error("STK Push Error:", error.response?.data || error.message);
