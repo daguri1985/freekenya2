@@ -8,8 +8,9 @@ const EditAspirant = () => {
   const [aspirants, setAspirants] = useState([]);
   const [editingAspirant, setEditingAspirant] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [counties, setCounties] = useState([]);
   const [formData, setFormData] = useState({
-    name: "", nationalId: "", mobile: "", email: "", 
+    name: "", nationalId: "", mobile: "", email: "",
     position: "", county: "", constituency: "", ward: "",
   });
 
@@ -27,8 +28,20 @@ const EditAspirant = () => {
     }
   };
 
+  const fetchCountyData = async () => {
+    try {
+      const res = await fetch("/county.json");
+      if (!res.ok) throw new Error("Failed to load counties");
+      const data = await res.json();
+      setCounties(data);
+    } catch (err) {
+      console.error("Error loading counties:", err);
+    }
+  };
+
   useEffect(() => {
     fetchAspirants();
+    fetchCountyData();
   }, []);
 
   const handleEdit = (aspirant) => {
@@ -129,7 +142,7 @@ const EditAspirant = () => {
               >
                 <h2 className="text-2xl font-bold mb-6 text-green-600">Edit Aspirant</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  {["name", "nationalId", "mobile", "email", "position", "county", "constituency", "ward"].map((field) => (
+                  {["name", "nationalId", "mobile", "email", "position", "constituency", "ward"].map((field) => (
                     <input
                       key={field}
                       type={field === "email" ? "email" : "text"}
@@ -140,6 +153,19 @@ const EditAspirant = () => {
                       className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
                     />
                   ))}
+                  <select
+                    name="county"
+                    value={formData.county}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+                  >
+                    <option value="">Select County</option>
+                    {counties.map((county) => (
+                      <option key={county.county_code || county.name} value={county.name}>
+                        {county.name}
+                      </option>
+                    ))}
+                  </select>
                   <div className="flex justify-end space-x-3">
                     <button
                       type="button"
