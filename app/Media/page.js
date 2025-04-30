@@ -23,8 +23,8 @@ const Media = () => {
 
   // Functions to handle button clicks (redirect or do action)
   const handleManageMembers = () => router.push('/editmembers');
-  const handleUploadMedia = () => router.push('/admin/upload-media');
-  const handleViewReports = () => router.push('/admin/reports');
+  //const handleUploadMedia = () => router.push('/admin/upload-media');
+  //const handleViewReports = () => router.push('/admin/reports');
   const handleManageAspirants = () => router.push('/editaspirant');
   const handleViewDonations = () => router.push('/donation');
 
@@ -71,8 +71,7 @@ const Media = () => {
             </button>
           </div>
 
-          {/* Upload Media */}
-          <div className="bg-white shadow-md rounded-lg p-6">
+          {/* <div className="bg-white shadow-md rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4 text-green-500">Upload Media</h2>
             <p className="text-gray-700 mb-4">Upload new training videos or content.</p>
             <button
@@ -81,10 +80,10 @@ const Media = () => {
             >
               Upload Video
             </button>
-          </div>
+          </div> */}
+          
 
-          {/* Reports */}
-          <div className="bg-white shadow-md rounded-lg p-6">
+          {/* <div className="bg-white shadow-md rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4 text-green-500">Reports & Analytics</h2>
             <p className="text-gray-700 mb-4">View reports on member activity and media performance.</p>
             <button
@@ -93,7 +92,17 @@ const Media = () => {
             >
               View Reports
             </button>
-          </div>
+          </div> /*<div className="bg-white shadow-md rounded-lg p-6">
+            <h2 className="text-xl font-semibold mb-4 text-green-500">Upload Media</h2>
+            <p className="text-gray-700 mb-4">Upload new training videos or content.</p>
+            <button
+              onClick={handleUploadMedia}
+              className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Upload Video
+            </button>
+          </div> */}
+          
 
           {/* Manage Aspirants */}
           <div className="bg-white shadow-md rounded-lg p-6">
