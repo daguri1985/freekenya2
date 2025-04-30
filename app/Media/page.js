@@ -26,7 +26,7 @@ const Media = () => {
   const handleUploadMedia = () => router.push('/admin/upload-media');
   const handleViewReports = () => router.push('/admin/reports');
   const handleManageAspirants = () => router.push('/editaspirant');
-  const handleViewDonations = () => router.push('/admin/donations');
+  const handleViewDonations = () => router.push('/donation');
 
   if (!isLoggedIn) {
     return (
