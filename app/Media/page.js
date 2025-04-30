@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { GoogleLogin } from '@react-oauth/google';
 import Navbar from '@/components/Navbar';
-import VideoPlayer from '@/components/VideoPlayer';
+
 
 const Media = () => {
   const router = useRouter();
@@ -15,11 +15,7 @@ const Media = () => {
     setIsLoggedIn(!!token);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('google_token');
-    setIsLoggedIn(false);
-    router.push('/');
-  };
+
 
   // Functions to handle button clicks (redirect or do action)
   const handleManageMembers = () => router.push('/editmembers');
@@ -49,13 +45,8 @@ const Media = () => {
       <Navbar />
       <div className="container mx-auto p-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-green-700">Media Admin Dashboard</h1>
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Logout
-          </button>
+          <h1 className="text-3xl font-bold text-green-700">Admin Dashboard</h1>
+          
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -128,11 +119,8 @@ const Media = () => {
             </button>
           </div>
 
-          {/* Video Library */}
-          <div className="bg-white shadow-md rounded-lg p-6 col-span-1 md:col-span-2">
-            <h2 className="text-xl font-semibold mb-4 text-green-500">Video Library</h2>
-            <VideoPlayer />
-          </div>
+       
+          
         </div>
       </div>
     </>
