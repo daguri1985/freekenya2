@@ -1,6 +1,8 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css'; // Import default Tippy styles
 
 export default function Header() {
     const router = useRouter();
@@ -90,6 +92,8 @@ export default function Header() {
         router.push('/aspirant');
     };
 
+     
+
     return (
         <header
             className="relative container mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center text-center md:text-left bg-cover bg-center"
@@ -103,12 +107,17 @@ export default function Header() {
                 <p className="mt-4 text-base sm:text-lg text-gray-200">
                     Established in July 2018, the FreeKenya Movement strives to liberate Kenya from political, social, and economic challenges. Join us in creating a fair and just society.
                 </p>
+                <Tippy
+  content="Dreaming of leadership in 2027? Click to take the first step."
+  className="!bg-white !text-gray-800 !border !border-gray-300 !shadow-lg !rounded-lg !backdrop-blur-sm !text-sm !px-4 !py-2"
+>
                 <button
                     className="mt-6 px-6 py-3 bg-green-600 text-white text-lg font-semibold rounded-full shadow-md hover:bg-red-700 transition duration-300"
                     onClick={handleAspirantClick}
                 >
                     Are You an Aspirant? Register Here
                 </button>
+                </Tippy>
             </div>
             <div className="relative z-10 p-6 bg-white rounded-lg shadow-lg w-full md:w-120">
                 <div className="bg-green-600 p-4 rounded-t-lg">

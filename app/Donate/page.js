@@ -2,6 +2,7 @@
 import Navbar from "@/components/Navbar";
 import { useState } from "react";
 import Image from "next/image";
+import Footer from "@/components/Footer";
 
 export default function Donate() {
   const [amount, setAmount] = useState(100);
@@ -116,6 +117,7 @@ export default function Donate() {
           </p>
         </div>
       </div>
+      <Footer />
     </>
   );
 }

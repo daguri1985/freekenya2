@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Navbar from '@/components/Navbar';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { motion, AnimatePresence } from "framer-motion";
+import Footer from "@/components/Footer";
 
 const EditAspirant = () => {
   const [aspirants, setAspirants] = useState([]);
@@ -175,6 +176,7 @@ const EditAspirant = () => {
           )}
         </AnimatePresence>
       </div>
+      <Footer />
     </>
   );
 };
