@@ -9,7 +9,7 @@ const Footer = () => {
         padding: '20px 0', // Adjust padding as needed
         textAlign: 'center',
         width: '100%',
-        position: 'fixed', // Or 'fixed' if you want it to stick to the bottom
+       
         bottom: 0, // Only relevant if position is 'fixed'
       }}
     >

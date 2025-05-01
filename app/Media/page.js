@@ -8,15 +8,30 @@ import Sidebar from '@/components/Sidebar';
 import Footer from '@/components/Footer';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
+import { UsersIcon as UserIcon, UserPlusIcon } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 const Media = () => {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [memberCount, setMemberCount] = useState(150); // Placeholder data
+  const [aspirantCount, setAspirantCount] = useState(45); // Placeholder data
+  const [newMembersData, setNewMembersData] = useState([ // Placeholder data
+    { day: 'Mon', count: 10 }, { day: 'Tue', count: 15 }, { day: 'Wed', count: 12 },
+    { day: 'Thu', count: 18 }, { day: 'Fri', count: 20 }, { day: 'Sat', count: 8 }, { day: 'Sun', count: 13 },
+  ]);
+  const [newAspirantsData, setNewAspirantsData] = useState([ // Placeholder data
+    { day: 'Mon', count: 3 }, { day: 'Tue', count: 5 }, { day: 'Wed', count: 2 },
+    { day: 'Thu', count: 7 }, { day: 'Fri', count: 6 }, { day: 'Sat', count: 1 }, { day: 'Sun', count: 4 },
+  ]);
 
   useEffect(() => {
     const token = localStorage.getItem('google_token');
     setIsLoggedIn(!!token);
+    // In a real application, you would fetch your member and aspirant counts here
+    // and update the state using setMemberCount and setAspirantCount.
+    // Similarly, fetch data for the graphs.
   }, []);
 
   const customTheme = {
@@ -35,79 +50,114 @@ const Media = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  if (!isLoggedIn) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-        <h1 className="text-3xl font-bold mb-6 text-green-600">Please login to access Media Admin Panel</h1>
-        <GoogleLogin
-          onSuccess={(credentialResponse) => {
-            console.log(credentialResponse);
-            localStorage.setItem('google_token', credentialResponse.credential);
-            setIsLoggedIn(true);
-          }}
-          onError={() => console.log("Login Failed")}
-        />
-      </div>
-    );
-  }
+  const sidebarWidthDesktop = '64'; // in rem
+  const navbarHeight = '4rem'; // Assuming your navbar height is 4rem
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar isOpen={isSidebarOpen} />
-      <div className={`flex-1 flex flex-col overflow-y-auto md:pl-64 ${isSidebarOpen ? 'mobile-open' : ''}`}>
-        <Navbar onSidebarToggle={toggleSidebar} isSidebarOpen={isSidebarOpen} isSidebarPresent={true} /> {/* Indicate sidebar is present */}
-        <div className="p-8">
-          <div className="container mx-auto">
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-green-700">Admin Dashboard</h1>
+    <div className="flex flex-col min-h-screen bg-gray-100">
+      <Navbar onSidebarToggle={toggleSidebar} isSidebarOpen={isSidebarOpen} isSidebarPresent={true} />
+      <div className="flex flex-grow" style={{ paddingTop: `${navbarHeight}` }}>
+        {/* Sidebar */}
+        <Sidebar
+          isOpen={isSidebarOpen}
+          className={`fixed top-0 left-0 h-screen transition-transform duration-300 ease-in-out z-50 w-56 md:w-${sidebarWidthDesktop} ${
+            isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+          }`}
+        />
+        {/* Main content area */}
+        <div className={`flex-1 overflow-y-auto p-4 md:p-8 ml-0 md:ml-${sidebarWidthDesktop}`}>
+          <div className="container mx-auto w-full">
+            <div className="mb-4 md:mb-8">
+              <h1 className="text-xl font-bold text-green-700 md:text-3xl">Admin Dashboard</h1>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Manage Members */}
-              <div className="bg-white shadow-md rounded-lg p-6">
-                <h2 className="text-xl font-semibold mb-4 text-green-500">Manage Members</h2>
-                <p className="text-gray-700 mb-4">Edit, delete, or update member information.</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+              {/* Existing Cards */}
+              <div className="bg-white shadow-md rounded-lg p-4 md:p-6">
+                <h2 className="text-lg font-semibold mb-2 text-green-500 md:text-xl md:mb-4 flex items-center"><UserIcon className="mr-2 h-5 w-5" /> Manage Members</h2>
+                <p className="text-gray-700 mb-2 md:mb-4 text-sm">Edit, delete, or update member information.</p>
                 <Tippy content="Click here to manage the members of the platform." theme={{ ...customTheme, name: 'custom' }}>
                   <button
                     onClick={handleManageMembers}
-                    className="bg-red-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                    className="bg-red-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-sm md:text-base"
                   >
                     Edit Members
                   </button>
                 </Tippy>
               </div>
 
-              {/* Manage Aspirants */}
-              <div className="bg-white shadow-md rounded-lg p-6">
-                <h2 className="text-xl font-semibold mb-4 text-red-500">Manage Aspirants</h2>
-                <p className="text-gray-700 mb-4">Edit or view information about aspirants.</p>
+              <div className="bg-white shadow-md rounded-lg p-4 md:p-6">
+                <h2 className="text-lg font-semibold mb-2 text-red-500 md:text-xl md:mb-4 flex items-center"><UserIcon className="mr-2 h-5 w-5" /> Manage Aspirants</h2>
+                <p className="text-gray-700 mb-2 md:mb-4 text-sm">Edit or view information about aspirants.</p>
                 <Tippy content="This button allows you to edit and view aspirant details." theme={{ ...customTheme, name: 'custom' }}>
                   <button
                     onClick={handleManageAspirants}
-                    className="bg-black hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                    className="bg-black hover:bg-red-700 text-white font-bold py-2 px-4 rounded text-sm md:text-base"
                   >
                     Manage Aspirants
                   </button>
                 </Tippy>
               </div>
 
-              {/* View Donations */}
-              <div className="bg-white shadow-md rounded-lg p-6">
-                <h2 className="text-xl font-semibold mb-4 text-green-500">View Donations</h2>
-                <p className="text-gray-700 mb-4">Track donations and donor activities.</p>
+              <div className="bg-white shadow-md rounded-lg p-4 md:p-6">
+                <h2 className="text-lg font-semibold mb-2 text-green-500 md:text-xl md:mb-4 flex items-center"><UserIcon className="mr-2 h-5 w-5" /> View Donations</h2>
+                <p className="text-gray-700 mb-2 md:mb-4 text-sm">Track donations and donor activities.</p>
                 <Tippy content="View and track all the donations made to the platform here." theme={{ ...customTheme, name: 'custom' }}>
                   <button
                     onClick={handleViewDonations}
-                    className="bg-green-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+                    className="bg-green-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded text-sm md:text-base"
                   >
                     View Donations
                   </button>
                 </Tippy>
               </div>
+
+              {/* New Cards */}
+              <div className="bg-white shadow-md rounded-lg p-4 md:p-6 flex items-center">
+                <div className="mr-4">
+                  <UserIcon className="h-8 w-8 text-blue-500" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-blue-700">{memberCount}</h2>
+                  <p className="text-gray-600 text-sm">Total Members</p>
+                </div>
+              </div>
+
+              <div className="bg-white shadow-md rounded-lg p-4 md:p-6 flex items-center">
+                <div className="mr-4">
+                  <UserIcon className="h-8 w-8 text-orange-500" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-orange-700">{aspirantCount}</h2>
+                  <p className="text-gray-600 text-sm">Total Aspirants</p>
+                </div>
+              </div>
+
+              <div className="bg-white shadow-md rounded-lg p-4 md:p-6">
+                <h2 className="text-lg font-semibold mb-2 text-purple-500 md:text-xl md:mb-4 flex items-center"><UserPlusIcon className="mr-2 h-5 w-5" /> New Members (Last 7 Days)</h2>
+                <LineChart width={250} height={100} data={newMembersData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="day" tick={{ fontSize: 10 }} />
+                  <YAxis tick={{ fontSize: 10 }} />
+                  <Tooltip />
+                  <Line type="monotone" dataKey="count" stroke="#8884d8" strokeWidth={2} dot={false} />
+                </LineChart>
+              </div>
+
+              <div className="bg-white shadow-md rounded-lg p-4 md:p-6">
+                <h2 className="text-lg font-semibold mb-2 text-teal-500 md:text-xl md:mb-4 flex items-center"><UserPlusIcon className="mr-2 h-5 w-5" /> New Aspirants (Last 7 Days)</h2>
+                <LineChart width={250} height={100} data={newAspirantsData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="day" tick={{ fontSize: 10 }} />
+                  <YAxis tick={{ fontSize: 10 }} />
+                  <Tooltip />
+                  <Line type="monotone" dataKey="count" stroke="#82ca9d" strokeWidth={2} dot={false} />
+                </LineChart>
+              </div>
             </div>
           </div>
-          <Footer />
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

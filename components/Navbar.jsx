@@ -1,4 +1,4 @@
-// components/Navbar.js
+// components/Navbar.jsx
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -40,21 +40,23 @@ export default function Navbar({ onSidebarToggle, isSidebarOpen, isSidebarPresen
 
   return (
     <nav className="bg-white shadow-md p-0 sticky top-0 z-50">
-      <div className="container mx-auto flex items-center justify-between">
+      <div className="container mx-auto flex items-center md:justify-center justify-between"> {/* Changed justify-between to md:justify-center */}
         {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
-          <Image src="/logo.png" alt="My Logo" width={250} height={250} />
-        </Link>
+        <div className="flex items-center space-x-2"> {/* Added a wrapper div for the logo */}
+          <Link href="/" className="flex items-center space-x-2">
+            <Image src="/logo.png" alt="My Logo" width={250} height={250} />
+          </Link>
+        </div>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Menu Button - Keep it on the right on mobile */}
         <button
-          className="md:hidden text-gray-700 focus:outline-none"
+          className="md:hidden text-gray-700 focus:outline-none absolute right-4"
           onClick={handleMobileNavToggle}
         >
           {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
 
-        {/* Desktop Navigation */}
+        {/* Desktop Navigation - Hide on mobile, flex on desktop */}
         <ul className="hidden md:flex space-x-6 items-center">
           <li><Link href="/aspirant" className="text-gray-700 hover:text-blue-600">Aspirant Registration</Link></li>
           <li><Link href="/" className="text-gray-700 hover:text-blue-600">Member Registration</Link></li>
