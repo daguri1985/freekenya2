@@ -17,6 +17,7 @@ export default function Home() {
     <Focus />
     <Register />
     </GoogleOAuthProvider>
+  
     <Footer/>
 </>
   );

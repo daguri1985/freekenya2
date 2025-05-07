@@ -39,18 +39,24 @@ export default function Navbar({ onSidebarToggle, isSidebarOpen, isSidebarPresen
   };
 
   return (
-    <nav className="bg-white shadow-md p-0 sticky top-0 z-50">
+    <nav className="fixed top-0 left-0 right-0 h-16 z-40 bg-white shadow-md">
       <div className="container mx-auto flex items-center md:justify-center justify-between"> {/* Changed justify-between to md:justify-center */}
         {/* Logo */}
-        <div className="flex items-center space-x-2"> {/* Added a wrapper div for the logo */}
+        <div className="relative h-18 w-40 md:w-48"> {/* Added a wrapper div for the logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <Image src="/logo.png" alt="My Logo" width={250} height={250} />
+          <Image 
+      src="/logo.png" 
+      alt="My Logo" 
+      fill // Fills the container
+      className="object-contain" // Maintains aspect ratio
+      priority // Optional for important images
+    />
           </Link>
         </div>
 
         {/* Mobile Menu Button - Keep it on the right on mobile */}
         <button
-          className="md:hidden text-gray-700 focus:outline-none absolute right-4"
+          className="md:hidden text-gray-700 focus:outline-none "
           onClick={handleMobileNavToggle}
         >
           {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
